@@ -1,0 +1,23 @@
+name: get_installation_ids
+
+on:
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: Repository to check
+        required: true
+        default: CaelanRP/AnotherCrabsTreasure
+
+jobs:
+  get-ids:
+    runs-on: [self-hosted]
+    steps:
+      - uses: PlayEveryWare/action-testbed@main
+        id: installation-id
+        with:
+          private-key: ${{ secrets.PEW_BUILDER_KEY_EL9FMYV8DVTLYMLSZJZRVL569RFZWPS }}
+          repository: ${{ inputs.repository }}
+
+      - name: Show installation Id
+        run: |
+          echo "Installation id: ${{ steps.installation-id.outputs.value }}"

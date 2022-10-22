@@ -1,0 +1,22 @@
+name: playeveryware/action-get-installation-id
+description: Get the installation id for a repository
+
+inputs:
+  application-id:
+    description: Application id of the GitHub app
+    default: 239145
+    required: true
+  private-key:
+    description: Private key for the application
+    required: true
+  repository:
+    description: Repository to query
+    required: true
+
+outputs:
+  value:
+    description: Installation id for the repository
+
+runs:
+  using: node16
+  main: dist/index.js
