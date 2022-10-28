@@ -2,15 +2,16 @@ import * as core from '@actions/core'
 import * as glob from 'glob'
 import * as fs from 'fs'
 
-async function run(): Promise<void> {
+function findProjectVersion(): string {
+    const projectVersion = core.getInput('project-version')
+    if (projectVersion) {
+      return projectVersion
+    }
 
-  core.saveState('isPost', true)
-
-  try {
     // Verify inputs
     const projectPath = core.getInput('path')
     if (!projectPath) {
-      throw new Error('No path supplied to the action')
+      throw new Error('No path or project-version supplied to the action')
     }
 
     const paths = glob.sync(`${projectPath}/**/ProjectSettings/ProjectVersion.txt`) || []
@@ -21,7 +22,17 @@ async function run(): Promise<void> {
       throw new Error(`Found ${paths.length} matches for ProjectVersion.txt. Need exactly 1`)
     }
 
-    const data = fs.readFileSync(paths[0]).toString()
+    return paths[0]
+}
+
+async function run(): Promise<void> {
+
+  core.saveState('isPost', true)
+
+  try {
+    const projectVersion = findProjectVersion();
+
+    const data = fs.readFileSync(projectVersion).toString()
     const lines = data.split('\n')
 
     const versionRegExp = new RegExp('^m_EditorVersion: (.*)$')
@@ -33,7 +44,7 @@ async function run(): Promise<void> {
       }
     }
 
-    throw new Error(`Failed to find m_EditorVersion line in ${paths[0]}`)
+    throw new Error(`Failed to find m_EditorVersion line in ${projectVersion}`)
 
   } catch (err: any) {
     if (err instanceof Error) {

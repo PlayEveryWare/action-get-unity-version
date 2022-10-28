@@ -42,20 +42,31 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const glob = __importStar(__nccwpck_require__(1957));
 const fs = __importStar(__nccwpck_require__(7147));
+function findProjectVersion() {
+    const projectVersion = core.getInput('project-version');
+    if (projectVersion) {
+        return projectVersion;
+    }
+    // Verify inputs
+    const projectPath = core.getInput('path');
+    if (!projectPath) {
+        throw new Error('No path or project-version supplied to the action');
+    }
+    const paths = glob.sync(`${projectPath}/**/ProjectSettings/ProjectVersion.txt`) || [];
+    if (paths.length != 1) {
+        for (const path of paths) {
+            core.error(path);
+        }
+        throw new Error(`Found ${paths.length} matches for ProjectVersion.txt. Need exactly 1`);
+    }
+    return paths[0];
+}
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         core.saveState('isPost', true);
         try {
-            // Verify inputs
-            const projectPath = core.getInput('path');
-            if (!projectPath) {
-                throw new Error('No path supplied to the action');
-            }
-            const paths = glob.sync(`${projectPath}/**/ProjectSettings/ProjectVersion.txt`) || [];
-            if (paths.length != 1) {
-                throw new Error(`Found ${paths.length} matches for ProjectVersion.txt. Need exactly 1`);
-            }
-            const data = fs.readFileSync(paths[0]).toString();
+            const projectVersion = findProjectVersion();
+            const data = fs.readFileSync(projectVersion).toString();
             const lines = data.split('\n');
             const versionRegExp = new RegExp('^m_EditorVersion: (.*)$');
             for (const line of lines) {
@@ -65,7 +76,7 @@ function run() {
                     return;
                 }
             }
-            throw new Error(`Failed to find m_EditorVersion line in ${paths[0]}`);
+            throw new Error(`Failed to find m_EditorVersion line in ${projectVersion}`);
         }
         catch (err) {
             if (err instanceof Error) {

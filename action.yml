@@ -5,7 +5,7 @@ inputs:
   path:
     description: Starting path to search for a Unity project
     default: .
-    required: true
+    required: false
   project-version:
     description: Optional path to ProjectVersion.txt (usually not needed)
     default: ''
