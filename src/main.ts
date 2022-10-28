@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import * as glob from 'glob'
 import * as fs from 'fs'
+import * as path from 'path'
 
 function findProjectVersion(): string {
     const projectVersion = core.getInput('project-version')
@@ -40,6 +41,10 @@ async function run(): Promise<void> {
       const match = versionRegExp.exec(line)
       if (match) {
         core.setOutput('version', match[1])
+
+        const versionPath = path.dirname(fs.realpathSync(projectVersion))
+        const projectPath = fs.realpathSync(path.join(versionPath, ".."))
+        core.setOutput('project-path', projectPath)
         return
       }
     }

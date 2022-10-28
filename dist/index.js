@@ -42,6 +42,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const glob = __importStar(__nccwpck_require__(1957));
 const fs = __importStar(__nccwpck_require__(7147));
+const path = __importStar(__nccwpck_require__(1017));
 function findProjectVersion() {
     const projectVersion = core.getInput('project-version');
     if (projectVersion) {
@@ -73,6 +74,9 @@ function run() {
                 const match = versionRegExp.exec(line);
                 if (match) {
                     core.setOutput('version', match[1]);
+                    const versionPath = path.dirname(fs.realpathSync(projectVersion));
+                    const projectPath = fs.realpathSync(path.join(versionPath, ".."));
+                    core.setOutput('project-path', projectPath);
                     return;
                 }
             }

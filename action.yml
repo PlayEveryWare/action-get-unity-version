@@ -14,34 +14,8 @@ inputs:
 outputs:
   version:
     description: Version of the Unity project
-
-#runs:
-#  using: "composite"
-#  steps:
-#    - name: Find location of ProjectVersion.txt
-#      shell: powershell
-#      run: |
-#        $p = Get-ChildItem -Recurse -Filter "ProjectVersion.txt"
-#        if (!$p) {
-#          echo "::error::Could not locate ProjectVersion.txt"
-#          exit 1
-#        }
-#        $fullName = $p.FullName
-#
-#        echo ( "Found project version at: " + $fullName )
-#
-#        $match = Get-ChildItem $fullName | Select-String -Pattern '^m_EditorVersion: (.*)$'
-#        if (!$match) {
-#          echo ( "::error::Failed to locate m_EditorVersion in " + $fullName )
-#          exit 1
-#        }
-#
-#        $editorVersion = $match.Matches.Groups[1].Value
-#        echo ( "version=" + $editorVersion ) >> $ENV:GITHUB_OUTPUT
-#        echo "test_value=mendsley" >> $ENV:GITHUB_OUTPUT
-#
-#        echo ( "Output file: " + $ENV:GITHUB_OUTPUT )
-#        type $ENV:GITHUB_OUTPUT
+  project-path:
+    description: Path to the Unity project
 
 runs:
   using: node16
