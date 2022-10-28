@@ -15,6 +15,9 @@ async function run(): Promise<void> {
 
     const paths = glob.sync(`${projectPath}/**/ProjectSettings/ProjectVersion.txt`) || []
     if (paths.length != 1) {
+      for (const path of paths) {
+        core.error(path);
+      }
       throw new Error(`Found ${paths.length} matches for ProjectVersion.txt. Need exactly 1`)
     }
 
